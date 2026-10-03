@@ -1,32 +1,10 @@
-# === Entornos virtuales ===
-venv/
-.venv/
-env/
-ENV/
-
-# === Variables de entorno / Secretos ===
-.env
-.env.local
-.env.*.local
-
-# === Django ===
+# Python / Django
 *.pyc
 __pycache__/
-*.pyo
-*.pyd
-db.sqlite3
-media/
-staticfiles/
-
-# === IDE ===
+*.sqlite3
+*.log
+.env
 .idea/
 .vscode/
-*.swp
-*.swo
-
-# === Sistema Operativo ===
-.DS_Store
-Thumbs.db
-
-# === Logs ===
-*.log
+venv/
+env/
