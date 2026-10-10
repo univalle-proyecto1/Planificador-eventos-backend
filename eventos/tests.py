@@ -130,3 +130,42 @@ class EventosApiTests(TestCase):
         }, format='json')
         self.assertEqual(res_t2.status_code, 400)
 
+    def test_event_and_task_schedule_can_be_updated(self):
+        self.client.force_login(self.user1)
+        event_response = self.client.post('/api/eventos/', {
+            'nombre': 'Evento original',
+            'limite_horas_diarias': 6,
+        }, format='json')
+        event_id = event_response.data['id']
+
+        updated_event = self.client.patch(f'/api/eventos/{event_id}/', {
+            'nombre': 'Evento actualizado',
+            'fecha_evento': '2026-12-20',
+            'hora_evento': '18:30:00',
+        }, format='json')
+
+        self.assertEqual(updated_event.status_code, 200)
+        self.assertEqual(updated_event.data['nombre'], 'Evento actualizado')
+        self.assertEqual(updated_event.data['fecha_evento'], '2026-12-20')
+        self.assertEqual(updated_event.data['hora_evento'], '18:30:00')
+
+        task_response = self.client.post('/api/tareas/', {
+            'evento': event_id,
+            'titulo': 'Subtarea original',
+            'fecha_asignada': '2026-12-19',
+            'hora_asignada': '10:00:00',
+            'horas_estimadas': 1,
+        }, format='json')
+        task_id = task_response.data['id']
+
+        updated_task = self.client.patch(f'/api/tareas/{task_id}/', {
+            'titulo': 'Subtarea actualizada',
+            'fecha_asignada': '2026-12-21',
+            'hora_asignada': '11:30:00',
+        }, format='json')
+
+        self.assertEqual(updated_task.status_code, 200)
+        self.assertEqual(updated_task.data['titulo'], 'Subtarea actualizada')
+        self.assertEqual(updated_task.data['fecha_asignada'], '2026-12-21')
+        self.assertEqual(updated_task.data['hora_asignada'], '11:30:00')
+

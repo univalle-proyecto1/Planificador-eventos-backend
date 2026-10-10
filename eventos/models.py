@@ -13,6 +13,8 @@ class Evento(models.Model):
         blank=True,
     )
     nombre = models.CharField(max_length=200)
+    fecha_evento = models.DateField(null=True, blank=True)
+    hora_evento = models.TimeField(null=True, blank=True)
     limite_horas_diarias = models.IntegerField(default=6)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
@@ -38,6 +40,7 @@ class TareaLogistica(models.Model):
     evento = models.ForeignKey(Evento, related_name='tareas', on_delete=models.CASCADE)
     titulo = models.CharField(max_length=200)
     fecha_asignada = models.DateField()
+    hora_asignada = models.TimeField(null=True, blank=True)
     horas_estimadas = models.DecimalField(max_digits=4, decimal_places=1)
     prioridad = models.CharField(max_length=10, choices=PRIORIDAD_CHOICES, default='NORMAL')
     estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='PENDIENTE')
