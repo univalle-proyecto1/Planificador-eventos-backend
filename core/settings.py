@@ -63,6 +63,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+CORS_ALLOW_CREDENTIALS = True  # necesario para enviar cookies/sesión cross-origin
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
 ROOT_URLCONF = 'core.urls'
@@ -91,12 +92,10 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 DATABASES = {
-    'default': dj_database_url.config(default=DATABASE_URL)
-    if DATABASE_URL
-    else {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        conn_max_age=600
+    )
 }
 
 

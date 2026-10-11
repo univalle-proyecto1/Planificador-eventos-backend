@@ -130,3 +130,46 @@ class EventosApiTests(TestCase):
         }, format='json')
         self.assertEqual(res_t2.status_code, 400)
 
+    def test_reprogramar_tarea_action(self):
+        self.client.force_login(self.user1)
+        res_evt = self.client.post('/api/eventos/', {'nombre': 'Boda', 'limite_horas_diarias': 6}, format='json')
+        evt_id = res_evt.data['id']
+
+        res_t = self.client.post('/api/tareas/', {
+            'evento': evt_id,
+            'titulo': 'Fotografía',
+            'fecha_asignada': '2026-10-20',
+            'horas_estimadas': 3.0,
+            'prioridad': 'ALTA'
+        }, format='json')
+        t_id = res_t.data['id']
+
+        # Reprogram to 2026-10-25
+        res_reprog = self.client.post(f'/api/tareas/{t_id}/reprogramar/', {
+            'fecha_asignada': '2026-10-25',
+        }, format='json')
+        self.assertEqual(res_reprog.status_code, 200)
+        self.assertEqual(res_reprog.data['fecha_asignada'], '2026-10-25')
+
+    def test_reprogramar_evento_action(self):
+        self.client.force_login(self.user1)
+        res_evt = self.client.post('/api/eventos/', {'nombre': 'Graduación', 'limite_horas_diarias': 5}, format='json')
+        evt_id = res_evt.data['id']
+
+        res_t1 = self.client.post('/api/tareas/', {
+            'evento': evt_id,
+            'titulo': 'Invitaciones',
+            'fecha_asignada': '2026-10-10',
+            'horas_estimadas': 2.0,
+        }, format='json')
+
+        # Reprogram event by +5 days
+        res_reprog = self.client.post(f'/api/eventos/{evt_id}/reprogramar/', {
+            'dias_desplazamiento': 5,
+            'fecha_evento': '2026-10-30',
+        }, format='json')
+        self.assertEqual(res_reprog.status_code, 200)
+        self.assertEqual(res_reprog.data['fecha_evento'], '2026-10-30')
+        self.assertEqual(res_reprog.data['tareas'][0]['fecha_asignada'], '2026-10-15')
+
+
